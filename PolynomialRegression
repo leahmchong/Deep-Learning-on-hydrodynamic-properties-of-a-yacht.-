@@ -1,0 +1,62 @@
+%Polynomial Regression
+%http://www.ahmetcecen.tech/MultiPolyRegress-MatlabCentral/#6
+
+FileName = 'marine_data.txt';
+FolderName = 'Users/leahmchong/Documents/MATLAB';
+File = fullfile(FolderName, FileName);
+load(File);   
+
+x1 = marine_data(1:250,1);
+x2 = marine_data(1:250,2);
+x3 = marine_data(1:250,3);
+x4 = marine_data(1:250,4);
+x5 = marine_data(1:250,5);
+x6 = marine_data(1:250,6);
+dataA = marine_data;
+
+
+p = 0.7;     % proportion of rows to select for training
+
+N = size(dataA,1);  % total number of rows 
+tf = false(N,1);    % create logical index vector
+tf(1:round(p*N)) = true;
+tf = tf(randperm(N)); % randomise order
+%tf
+dataTraining = dataA(tf,:);
+%dataTraining
+dataTesting = dataA(~tf,:);
+
+
+X = dataTraining(:,1:6);
+y = dataTraining(:,7);
+X_test=dataTesting(:,1:6);
+%X_test
+Y_test=dataTesting(:,7);
+mdp = MultiPolyRegress(X,y,2);
+%mdp
+
+A=mdp.Coefficients;
+%A
+%mdp.PolynomialExpression
+%mdp.Legend
+Y=dataTesting(:,7);
+Y_pred=A(1)*X_test(:,6) + A(2)*X_test(:,5) + A(3)*X_test(:,5).*X_test(:,6) +...
+    A(4)*X_test(:,4) + A(5)*X_test(:,4).*X_test(:,6) + A(6)*X_test(:,4).*X_test(:,5)...
+    + A(7)*X_test(:,3) + A(8)*X_test(:,3).*X_test(:,6) + A(9)*X_test(:,3).*X_test(:,5)...
+    + A(10)*X_test(:,3).*X_test(:,4) + A(11)*X_test(:,2) + A(12)*X_test(:,2).*X_test(:,6)...
+    + A(13)*X_test(:,2).*X_test(:,5) + A(14)*X_test(:,2).*X_test(:,4) ...
+    + A(15)*X_test(:,2).*X_test(:,3) + A(16)*X_test(:,1) + A(17)*X_test(:,1).*X_test(:,6)...
+    + A(18)*X_test(:,1).*X_test(:,5) + A(19)*X_test(:,1).*X_test(:,4)...
+    + A(20)*X_test(:,1).*X_test(:,3) + A(21)*X_test(:,1).*X_test(:,2) + A(22)...
+    + A(23)*X_test(:,1).^2 + A(24)*X_test(:,2).^2 + A(25)*X_test(:,3).^2 ...
+    + A(26)*X_test(:,4).^2 + A(27)*X_test(:,5).^2 + A(28)*X_test(:,6).^2;
+%Y_pred
+mse_test=immse(Y_pred,Y_test);
+%mse_test
+msesq=sqrt(mse_test);
+msesq
+scatter3(X(:,1),X(:,2),y)
+xlabel('X1');
+ylabel('X2');
+zlabel('Y');
+
